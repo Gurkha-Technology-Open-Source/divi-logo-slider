@@ -1,0 +1,18 @@
+.dls-logo-slider .swiper-slide {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.dls-logo-slider .swiper-slide img {
+    max-width: 100%;
+    height: auto;
+}
+
+.dls-logo-slider .swiper-button-next, .dls-logo-slider .swiper-button-prev {
+    color: #000;
+}
+
+.dls-logo-slider .swiper-pagination-bullet-active {
+    background: #000;
+}
