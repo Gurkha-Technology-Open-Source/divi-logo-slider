@@ -65,3 +65,8 @@ The module will have the following options within the Divi Builder:
 *   **Tooltips:** An option to display a tooltip with the logo's title on hover.
 *   **Multiple Slider Layouts:** Pre-designed layout options for the slider.
 *   **Advanced Styling Options:** More granular control over the styling of the slider elements (e.g., arrow color, pagination color).
+
+## 8. Other details
+*   **Developer:** Gurkha Technology
+*   **Licesnse:** Open Source
+*   **Website:** Gurkha Technology
