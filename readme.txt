@@ -1,4 +1,4 @@
-=== Divi Logo Slider ===
+=== Logo Slider for Divi ===
 Contributors: aariyan
 Donate link: https://www.aariyan.com/
 Tags: divi, logo, slider, carousel, logo slider, logo carousel, divi module

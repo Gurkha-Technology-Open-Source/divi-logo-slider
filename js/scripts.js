@@ -1,6 +1,6 @@
 (function($) {
     $(document).ready(function() {
-        $('.dls-logo-slider').each(function() {
+        $('.lsfd-logo-slider').each(function() {
             var $slider = $(this);
             var slidesPerView = $slider.data('slides-per-view');
             var spaceBetween = $slider.data('space-between');
