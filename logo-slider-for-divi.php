@@ -24,3 +24,8 @@ function lsfd_initialize_module() {
     }
 }
 add_action( 'et_builder_ready', 'lsfd_initialize_module' );
+
+// Initialize admin functionality
+if ( is_admin() ) {
+    require_once plugin_dir_path( __FILE__ ) . 'includes/Admin.php';
+}

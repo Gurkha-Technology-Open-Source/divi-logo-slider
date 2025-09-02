@@ -22,13 +22,52 @@ class LogoSliderForDivi extends ET_Builder_Module {
         wp_enqueue_script( 'lsfd-scripts', plugins_url( '../js/scripts.js', __FILE__ ), array( 'jquery', 'swiper-js' ), '1.0.0', true );
     }
 
+    /**
+     * Get admin managed logos for select options
+     */
+    public function get_admin_logos_options() {
+        $logos = get_posts( array(
+            'post_type'      => 'lsfd_logo',
+            'posts_per_page' => -1,
+            'post_status'    => 'publish',
+            'orderby'        => 'menu_order',
+            'order'          => 'ASC',
+        ) );
+
+        $options = array();
+        foreach ( $logos as $logo ) {
+            $options[ $logo->ID ] = $logo->post_title;
+        }
+
+        return $options;
+    }
+
     public function get_fields() {
         return array(
+            'logo_source' => array(
+                'label'           => esc_html__( 'Logo Source', 'logo-slider-for-divi' ),
+                'type'            => 'select',
+                'option_category' => 'basic_option',
+                'options'         => array(
+                    'admin'   => esc_html__( 'Use Admin Managed Logos', 'logo-slider-for-divi' ),
+                    'custom'  => esc_html__( 'Add Custom Logos', 'logo-slider-for-divi' ),
+                ),
+                'default'         => 'admin',
+                'affects'         => array( 'logos', 'selected_logos' ),
+            ),
+            'selected_logos' => array(
+                'label'           => esc_html__( 'Select Logos', 'logo-slider-for-divi' ),
+                'type'            => 'multiple_checkboxes',
+                'option_category' => 'basic_option',
+                'options'         => $this->get_admin_logos_options(),
+                'depends_show_if' => 'admin',
+            ),
             'logos' => array(
-                'label'           => esc_html__( 'Logos', 'logo-slider-for-divi' ),
+                'label'           => esc_html__( 'Custom Logos', 'logo-slider-for-divi' ),
                 'type'            => 'composite',
                 'option_category' => 'basic_option',
                 'composite_type'  => 'add_new',
+                'depends_show_if' => 'custom',
                 'composite_structure' => array(
                     'logo_image' => array(
                         'label'              => esc_html__( 'Logo Image', 'logo-slider-for-divi' ),
@@ -127,7 +166,9 @@ class LogoSliderForDivi extends ET_Builder_Module {
     }
 
     public function render( $attrs, $content = null, $render_slug ) {
-        $logos = $this->props['logos'];
+        $logo_source = $this->props['logo_source'];
+        $selected_logos = $this->props['selected_logos'];
+        $custom_logos = $this->props['logos'];
         $slides_per_view = $this->props['slides_per_view'];
         $space_between = $this->props['space_between'];
         $slider_speed = $this->props['slider_speed'];
@@ -149,8 +190,34 @@ class LogoSliderForDivi extends ET_Builder_Module {
 
         $output = '<div class="swiper-container lsfd-logo-slider"' . $data_attrs . '><div class="swiper-wrapper">';
 
-        if ( $logos ) {
-            foreach ( $logos as $logo ) {
+        // Get logos based on source
+        if ( 'admin' === $logo_source && ! empty( $selected_logos ) ) {
+            // Use admin-managed logos
+            $logo_ids = explode( '|', $selected_logos );
+            foreach ( $logo_ids as $logo_id ) {
+                if ( empty( $logo_id ) ) continue;
+                
+                $logo_image = get_post_meta( $logo_id, 'logo_image', true );
+                $logo_url   = get_post_meta( $logo_id, 'logo_url', true );
+                $logo_alt   = get_post_meta( $logo_id, 'logo_alt', true );
+
+                if ( $logo_image ) {
+                    $output .= '<div class="swiper-slide">';
+                    if ( $logo_url ) {
+                        $output .= sprintf( '<a href="%1$s" target="_blank">', esc_url( $logo_url ) );
+                    }
+
+                    $output .= sprintf( '<img src="%1$s" alt="%2$s" />', esc_url( $logo_image ), esc_attr( $logo_alt ) );
+
+                    if ( $logo_url ) {
+                        $output .= '</a>';
+                    }
+                    $output .= '</div>';
+                }
+            }
+        } elseif ( 'custom' === $logo_source && $custom_logos ) {
+            // Use custom logos from builder
+            foreach ( $custom_logos as $logo ) {
                 $logo_image = $logo['logo_image'];
                 $logo_url   = $logo['logo_url'];
                 $logo_alt   = $logo['logo_alt'];
